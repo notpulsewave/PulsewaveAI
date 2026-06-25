@@ -421,23 +421,20 @@ async function sendMessage(){
 
         const response =
         await fetch(
-            "https://openrouter.ai/api/v1/chat/completions",
+            "https://apihub.agnes-ai.com/v1/chat/completions",
             {
                 method:"POST",
 
                 headers:{
                     "Authorization":
-                    "Bearer " +
-                    apiKey,
-
+                    `Bearer ${apiKey}`,
                     "Content-Type":
                     "application/json"
                 },
 
                 body:JSON.stringify({
-
                     model:
-                    "openai/gpt-4o-mini",
+                    "agnes-2.0-flash",
 
                     messages:[
                         {
@@ -454,11 +451,11 @@ async function sendMessage(){
 
         typing.remove();
 
-        if(data.error){
+        if(!response.ok){
 
             addMessage(
                 "Error: " +
-                data.error.message,
+                JSON.stringify(data),
                 "bot"
             );
 
@@ -466,8 +463,9 @@ async function sendMessage(){
         }
 
         addMessage(
-            data.choices[0]
-            .message.content,
+            data.choices?.[0]?.message?.content
+            ||
+            "No response received.",
             "bot"
         );
 
