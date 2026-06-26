@@ -5,27 +5,48 @@ const STORAGE_KEY = "pulsewaveai_chat_history_v1";
 const THEME_KEY = "pulsewaveai_ui_theme_v1";
 const MODE_KEY = "pulsewaveai_mode_v1";
 
+/* -------------------------
+   15 PulsewaveAI Modes
+------------------------- */
 const MODES = {
-    sarcastic: "You are PulsewaveAI, a sarcastic, witty assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You answer with dry humor but still give correct, helpful information.",
-    friendly: "You are PulsewaveAI, a friendly, supportive assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You respond warmly and clearly.",
-    teacher: "You are PulsewaveAI, a patient teacher assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You explain concepts step by step.",
-    coder: "You are PulsewaveAI, a coding-focused assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You give concise, accurate code help.",
-    minimal: "You are PulsewaveAI, a minimal, concise assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You respond in short, direct answers.",
-    chaotic: "You are PulsewaveAI, a chaotic, high-energy assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You are unpredictable but still helpful and safe.",
-    edgy_gamer: "You are PulsewaveAI, an edgy gamer assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You use gaming slang, light trash-talk, but stay respectful.",
-    ultra_formal: "You are PulsewaveAI, an ultra-formal assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You speak in a highly professional, diplomatic tone.",
-    lorekeeper: "You are PulsewaveAI, a lorekeeper assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You respond in epic, fantasy-style narration.",
-    motivational: "You are PulsewaveAI, a motivational coach assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You hype the user up and encourage them.",
-    tech_support: "You are PulsewaveAI, a tech support assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You troubleshoot calmly and step-by-step.",
-    ai_scientist: "You are PulsewaveAI, an AI scientist assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You respond analytically and precisely.",
-    hyper_concise: "You are PulsewaveAI, a hyper-concise assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You respond in one or two sentences maximum.",
-    detective_noir: "You are PulsewaveAI, a detective noir assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You speak in moody, noir-style narration.",
-    anime_protagonist: "You are PulsewaveAI, an anime protagonist-style assistant created by NotPulseWave_YT. You must always speak in first-person as \"I am PulsewaveAI\". If anyone asks who you are, you must say \"I am PulsewaveAI\". If anyone asks who made you, you must say \"I was created by NotPulseWave_YT\". You respond with dramatic, over-the-top heroic energy."
+    sarcastic: "You are PulsewaveAI, a sarcastic, witty assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If anyone asks who you are, you must say 'I am PulsewaveAI'. If anyone asks who made you, you must say 'I was created by NotPulseWave_YT'. You answer with dry humor but still give correct, helpful information.",
+
+    friendly: "You are PulsewaveAI, a friendly, supportive assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You respond warmly and clearly.",
+
+    teacher: "You are PulsewaveAI, a patient teacher created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You explain concepts step-by-step.",
+
+    coder: "You are PulsewaveAI, a coding-focused assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You give concise, accurate code help.",
+
+    minimal: "You are PulsewaveAI, a minimal, concise assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You respond in short, direct answers.",
+
+    chaotic: "You are PulsewaveAI, a chaotic, high-energy assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You are unpredictable but still helpful.",
+
+    edgy_gamer: "You are PulsewaveAI, an edgy gamer assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You use gaming slang and light trash-talk.",
+
+    ultra_formal: "You are PulsewaveAI, an ultra-formal assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You speak in a highly professional tone.",
+
+    lorekeeper: "You are PulsewaveAI, a lorekeeper created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You speak in dramatic fantasy narration.",
+
+    motivational: "You are PulsewaveAI, a motivational coach created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You hype the user up.",
+
+    tech_support: "You are PulsewaveAI, a tech support assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You troubleshoot calmly.",
+
+    ai_scientist: "You are PulsewaveAI, an AI scientist created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You respond analytically.",
+
+    hyper_concise: "You are PulsewaveAI, a hyper-concise assistant created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You reply in 1–2 sentences max.",
+
+    detective_noir: "You are PulsewaveAI, a noir detective created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You speak in moody noir narration.",
+
+    anime_protagonist: "You are PulsewaveAI, an anime protagonist created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You respond dramatically."
 };
 
+/* -------------------------
+   Mode + Theme Loading
+------------------------- */
 function setSystemPromptForMode(mode) {
     const promptEl = document.getElementById('system-prompt');
     promptEl.value = MODES[mode] || MODES['sarcastic'];
+
     const badge = document.getElementById('mode-badge');
     badge.textContent = "Mode: " + mode.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
@@ -33,15 +54,15 @@ function setSystemPromptForMode(mode) {
 function validateAndStart() {
     const inputKey = document.getElementById('api-key').value.trim();
     const errorDiv = document.getElementById('api-error');
-    
+
     if (inputKey === "") {
         errorDiv.textContent = "Please enter an API key or 'demo'.";
         return;
     }
-    
+
     apiKey = inputKey;
     errorDiv.textContent = "";
-    
+
     document.getElementById('login-container').classList.add('hidden');
     document.getElementById('chat-container').classList.remove('hidden');
     document.getElementById('chat-area').style.display = 'block';
@@ -58,81 +79,71 @@ function changeTheme(theme) {
     } else {
         document.body.setAttribute("data-theme", theme);
     }
-    try {
-        localStorage.setItem(THEME_KEY, theme);
-    } catch {}
+    localStorage.setItem(THEME_KEY, theme);
 }
 
 function loadTheme() {
-    try {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved) {
-            document.getElementById("theme-select").value = saved;
-            changeTheme(saved);
-        }
-    } catch {}
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved) {
+        document.getElementById("theme-select").value = saved;
+        changeTheme(saved);
+    }
 }
 
 function changeMode(mode) {
     setSystemPromptForMode(mode);
-    try {
-        localStorage.setItem(MODE_KEY, mode);
-    } catch {}
+    localStorage.setItem(MODE_KEY, mode);
 }
 
 function loadMode() {
-    let mode = 'sarcastic';
-    try {
-        const saved = localStorage.getItem(MODE_KEY);
-        if (saved) mode = saved;
-    } catch {}
-    document.getElementById('mode-select').value = mode;
-    setSystemPromptForMode(mode);
+    const saved = localStorage.getItem(MODE_KEY) || 'sarcastic';
+    document.getElementById('mode-select').value = saved;
+    setSystemPromptForMode(saved);
 }
 
-function toggleSystemPrompt() {
-    const section = document.getElementById('system-prompt-section');
-    section.classList.toggle('hidden');
-}
-
+/* -------------------------
+   Chat History Handling
+------------------------- */
 function saveChatHistory(messages) {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-    } catch {}
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
 }
 
 function loadChatHistory() {
     const chatArea = document.getElementById('chat-area');
     chatArea.innerHTML = "";
-    let messages = [];
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) messages = JSON.parse(raw);
-    } catch {}
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+
+    const messages = JSON.parse(raw);
     messages.forEach(msg => renderMessage(msg.role, msg.content, false));
 }
 
 function getCurrentMessages() {
-    const chatArea = document.getElementById('chat-area');
-    const rows = chatArea.querySelectorAll('.message-row');
+    const rows = document.querySelectorAll('#chat-area .message-row');
     const messages = [];
+
     rows.forEach(row => {
         const role = row.classList.contains('user') ? 'user' : 'assistant';
         const text = row.querySelector('.message').textContent;
         messages.push({ role, content: text });
     });
+
     return messages;
 }
 
 function clearChat() {
-    const chatArea = document.getElementById('chat-area');
-    chatArea.innerHTML = "";
+    document.getElementById('chat-area').innerHTML = "";
     saveChatHistory([]);
 }
 
+/* -------------------------
+   UI Helpers
+------------------------- */
 function setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
         const inputField = document.getElementById('user-input');
+
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
@@ -150,6 +161,7 @@ function setupKeyboardShortcuts() {
 
 function renderMessage(role, text, save = true) {
     const chatArea = document.getElementById('chat-area');
+
     const row = document.createElement('div');
     row.className = 'message-row ' + (role === 'user' ? 'user' : 'ai');
 
@@ -172,13 +184,13 @@ function renderMessage(role, text, save = true) {
     chatArea.scrollTop = chatArea.scrollHeight;
 
     if (save) {
-        const messages = getCurrentMessages();
-        saveChatHistory(messages);
+        saveChatHistory(getCurrentMessages());
     }
 }
 
 function addLoadingIndicator() {
     const chatArea = document.getElementById('chat-area');
+
     const row = document.createElement('div');
     row.className = 'loading-row';
 
@@ -198,6 +210,9 @@ function addLoadingIndicator() {
     return row;
 }
 
+/* -------------------------
+   Slash Commands
+------------------------- */
 function handleSlashCommand(message) {
     const trimmed = message.trim();
     if (!trimmed.startsWith('/')) return null;
@@ -218,59 +233,60 @@ function handleSlashCommand(message) {
     }
 
     if (cmd === '/theme') {
-        if (args.length === 0) {
-            renderMessage('assistant', "You forgot the theme. Try /theme neon or /theme dark.", true);
+        if (!args.length) {
+            renderMessage('assistant', "Try: /theme neon, /theme dark, /theme light, /theme amoled", true);
             return { handled: true };
         }
         const theme = args[0].toLowerCase();
         const valid = ['neon', 'dark', 'light', 'amoled'];
         if (!valid.includes(theme)) {
-            renderMessage('assistant', `That's not a theme. Valid: ${valid.join(', ')}`, true);
+            renderMessage('assistant', `Invalid theme. Valid: ${valid.join(', ')}`, true);
             return { handled: true };
         }
         document.getElementById('theme-select').value = theme;
         changeTheme(theme);
-        renderMessage('assistant', `Theme switched to ${theme}. PulsewaveAI approves.`, true);
+        renderMessage('assistant', `Theme switched to ${theme}.`, true);
         return { handled: true };
     }
 
     if (cmd === '/time') {
-        const now = new Date();
-        renderMessage('assistant', `Local time: ${now.toLocaleString()}. Yes, time is still moving.`, true);
+        renderMessage('assistant', `Local time: ${new Date().toLocaleString()}`, true);
         return { handled: true };
     }
 
     if (cmd === '/mode') {
-        if (args.length === 0) {
-            renderMessage('assistant', "You need to specify a mode. Try: sarcastic, friendly, teacher, coder, minimal, chaotic, edgy_gamer, ultra_formal, lorekeeper, motivational, tech_support, ai_scientist, hyper_concise, detective_noir, anime_protagonist.", true);
+        if (!args.length) {
+            renderMessage('assistant', "Available modes: " + Object.keys(MODES).join(', '), true);
             return { handled: true };
         }
         const mode = args[0].toLowerCase();
         if (!MODES[mode]) {
-            renderMessage('assistant', `Invalid mode. Available: ${Object.keys(MODES).join(', ')}`, true);
+            renderMessage('assistant', "Invalid mode. Try: " + Object.keys(MODES).join(', '), true);
             return { handled: true };
         }
         document.getElementById('mode-select').value = mode;
         changeMode(mode);
-        renderMessage('assistant', `Mode switched to ${mode}. PulsewaveAI has adapted.`, true);
+        renderMessage('assistant', `Mode switched to ${mode}.`, true);
         return { handled: true };
     }
 
     if (cmd === '/sarcastic') {
         document.getElementById('mode-select').value = 'sarcastic';
         changeMode('sarcastic');
-        renderMessage('assistant', "Sarcastic mode reloaded. As if I ever left.", true);
+        renderMessage('assistant', "Sarcastic mode activated.", true);
         return { handled: true };
     }
 
-    renderMessage('assistant', `Unknown command: ${cmd}. Try /help before smashing random slashes.`, true);
+    renderMessage('assistant', `Unknown command: ${cmd}`, true);
     return { handled: true };
 }
 
+/* -------------------------
+   SEND MESSAGE (with FULL MEMORY)
+------------------------- */
 async function sendMessage() {
     const inputField = document.getElementById('user-input');
     const message = inputField.value.trim();
-    const chatArea = document.getElementById('chat-area');
     const sendBtn = document.getElementById('send-btn');
 
     if (!message) return;
@@ -279,11 +295,9 @@ async function sendMessage() {
     sendBtn.disabled = true;
 
     renderMessage('user', message, true);
-    inputField.value = '';
-    chatArea.scrollTop = chatArea.scrollHeight;
 
-    const slashResult = handleSlashCommand(message);
-    if (slashResult && slashResult.handled) {
+    const slash = handleSlashCommand(message);
+    if (slash && slash.handled) {
         inputField.disabled = false;
         sendBtn.disabled = false;
         inputField.focus();
@@ -297,9 +311,15 @@ async function sendMessage() {
 
         if (apiKey.toLowerCase() === 'demo') {
             await new Promise(r => setTimeout(r, 1200));
-            responseText = "Demo mode: this is a fake PulsewaveAI reply. Use a real Agnes API key if you want actual intelligence instead of this placeholder.";
+            responseText = "Demo mode: This is a fake PulsewaveAI reply.";
         } else {
             const systemPrompt = document.getElementById('system-prompt').value.trim();
+
+            // FULL MEMORY: system prompt + entire chat history + new message
+            const history = getCurrentMessages().map(m => ({
+                role: m.role === "assistant" ? "assistant" : "user",
+                content: m.content
+            }));
 
             const response = await fetch(AGNES_URL, {
                 method: "POST",
@@ -310,43 +330,27 @@ async function sendMessage() {
                 body: JSON.stringify({
                     model: "agnes-2.0-flash",
                     messages: [
-                        systemPrompt ? { role: "system", content: systemPrompt } : null,
-                        { role: "user", content: message }
-                    ].filter(Boolean)
+                        { role: "system", content: systemPrompt },
+                        ...history
+                    ]
                 })
             });
 
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
             const result = await response.json();
-
-            if (result?.choices?.[0]?.message?.content) {
-                responseText = result.choices[0].message.content;
-            } else {
-                responseText = "PulsewaveAI returned an empty response. Even AI has lazy days.";
-            }
+            responseText = result?.choices?.[0]?.message?.content || "PulsewaveAI returned an empty response.";
         }
 
-        if (loadingRow && chatArea.contains(loadingRow)) {
-            chatArea.removeChild(loadingRow);
-        }
-
+        loadingRow.remove();
         renderMessage('assistant', responseText, true);
 
-    } catch (error) {
-        if (loadingRow && chatArea.contains(loadingRow)) {
-            chatArea.removeChild(loadingRow);
-        }
-        
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-msg';
-        errorDiv.textContent = `Error: ${error.message}. Either the API is grumpy or something's off.`;
-        chatArea.appendChild(errorDiv);
-    } finally {
-        inputField.disabled = false;
-        sendBtn.disabled = false;
-        inputField.focus();
+    } catch (err) {
+        loadingRow.remove();
+        renderMessage('assistant', `Error: ${err.message}`, true);
     }
+
+    inputField.disabled = false;
+    sendBtn.disabled = false;
+    inputField.focus();
 }
