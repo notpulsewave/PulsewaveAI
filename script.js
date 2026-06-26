@@ -124,21 +124,6 @@ function clearChat() {
     saveChatHistory([]);
 }
 
-function toggleSystemPrompt() {
-    // Old Safari-safe toggle
-    const box = document.getElementById("system-prompt-container");
-    if (!box) return;
-
-    // If hidden, show it
-    if (box.style.display === "" || box.style.display === "none") {
-        box.style.display = "block";
-    } 
-    // If visible, hide it
-    else {
-        box.style.display = "none";
-    }
-}
-
 /* -------------------------
    UI Helpers
 ------------------------- */
@@ -192,235 +177,35 @@ function renderMessage(role, text, save = true) {
     return { row, bubble };
 }
 
-function addTypingIndicator() {
-    const chatArea = document.getElementById('chat-area');
-
-    const row = document.createElement('div');
-    row.className = 'loading-row';
-
-    const avatar = document.createElement('div');
-    avatar.className = 'avatar ai';
-
-    const dots = document.createElement('div');
-    dots.className = 'loading-dots';
-    dots.innerHTML = '<span></span><span></span><span></span>';
-
-    const label = document.createElement('div');
-    label.style.fontSize = '0.8rem';
-    label.style.color = '#aaa';
-    label.textContent = 'PulsewaveAI is typing…';
-
-    row.appendChild(avatar);
-    row.appendChild(dots);
-    row.appendChild(label);
-
-    chatArea.appendChild(row);
-    chatArea.scrollTop = chatArea.scrollHeight;
-
-    return row;
-}
-
 /* -------------------------
-   HTML Box Rendering
+   System Prompt Toggle (old working version)
 ------------------------- */
-function isHtmlContent(text) {
-    const trimmed = text.trim();
-    if (!trimmed.includes('<') || !trimmed.includes('>')) return false;
-    return /<[^>]+>/.test(trimmed);
-}
+function toggleSystemPrompt() {
+    const box = document.getElementById("system-prompt-container");
+    if (!box) return;
 
-function renderHtmlBox(htmlText) {
-    const chatArea = document.getElementById('chat-area');
-
-    const row = document.createElement('div');
-    row.className = 'message-row ai';
-
-    const avatar = document.createElement('div');
-    avatar.className = 'avatar ai';
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'message ai-msg';
-
-    const header = document.createElement('div');
-    header.style.display = 'flex';
-    header.style.justifyContent = 'space-between';
-    header.style.alignItems = 'center';
-    header.style.marginBottom = '6px';
-
-    const title = document.createElement('span');
-    title.style.fontSize = '0.8rem';
-    title.style.color = '#aaa';
-    title.textContent = 'HTML snippet';
-
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = 'Copy';
-    copyBtn.style.fontSize = '0.75rem';
-    copyBtn.style.padding = '4px 8px';
-    copyBtn.style.borderRadius = '999px';
-    copyBtn.style.border = '1px solid #333';
-    copyBtn.style.background = '#050505';
-    copyBtn.style.color = '#fff';
-    copyBtn.style.cursor = 'pointer';
-
-    copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(htmlText).then(() => {
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => copyBtn.textContent = 'Copy', 1200);
-        }).catch(() => {
-            copyBtn.textContent = 'Error';
-            setTimeout(() => copyBtn.textContent = 'Copy', 1200);
-        });
-    });
-
-    header.appendChild(title);
-    header.appendChild(copyBtn);
-
-    const pre = document.createElement('pre');
-    pre.style.margin = '0';
-    pre.style.padding = '8px';
-    pre.style.background = '#050505';
-    pre.style.borderRadius = '8px';
-    pre.style.overflowX = 'auto';
-    pre.style.fontSize = '0.8rem';
-    pre.style.whiteSpace = 'pre';
-    pre.textContent = htmlText;
-
-    wrapper.appendChild(header);
-    wrapper.appendChild(pre);
-
-    row.appendChild(avatar);
-    row.appendChild(wrapper);
-
-    chatArea.appendChild(row);
-    chatArea.scrollTop = chatArea.scrollHeight;
-
-    saveChatHistory(getCurrentMessages());
+    if (box.style.display === "block") {
+        box.style.display = "none";
+    } else {
+        box.style.display = "block";
+    }
 }
 
 /* -------------------------
-   Streaming Animation
-------------------------- */
-function streamTextIntoBubble(bubble, fullText) {
-    bubble.textContent = '';
-    let index = 0;
-
-    const interval = 12; // smooth typing speed
-    const timer = setInterval(() => {
-        bubble.textContent += fullText.charAt(index);
-        index++;
-        bubble.parentElement.parentElement.parentElement.scrollTop =
-            bubble.parentElement.parentElement.parentElement.scrollHeight;
-
-        if (index >= fullText.length) {
-            clearInterval(timer);
-            saveChatHistory(getCurrentMessages());
-        }
-    }, interval);
-}
-
-/* -------------------------
-   Slash Commands
-------------------------- */
-function handleSlashCommand(message) {
-    const trimmed = message.trim();
-    if (!trimmed.startsWith('/')) return null;
-
-    const parts = trimmed.split(/\s+/);
-    const cmd = parts[0].toLowerCase();
-    const args = parts.slice(1);
-
-    if (cmd === '/help') {
-        renderMessage('assistant', "Commands:\n/clear\n/theme neon|dark|light|amoled\n/time\n/mode <mode>\n/sarcastic", true);
-        return { handled: true };
-    }
-
-    if (cmd === '/clear') {
-        clearChat();
-        renderMessage('assistant', "Chat cleared. PulsewaveAI is ready for your next questionable idea.", true);
-        return { handled: true };
-    }
-
-    if (cmd === '/theme') {
-        if (!args.length) {
-            renderMessage('assistant', "Try: /theme neon, /theme dark, /theme light, /theme amoled", true);
-            return { handled: true };
-        }
-        const theme = args[0].toLowerCase();
-        const valid = ['neon', 'dark', 'light', 'amoled'];
-        if (!valid.includes(theme)) {
-            renderMessage('assistant', `Invalid theme. Valid: ${valid.join(', ')}`, true);
-            return { handled: true };
-        }
-        document.getElementById('theme-select').value = theme;
-        changeTheme(theme);
-        renderMessage('assistant', `Theme switched to ${theme}.`, true);
-        return { handled: true };
-    }
-
-    if (cmd === '/time') {
-        renderMessage('assistant', `Local time: ${new Date().toLocaleString()}`, true);
-        return { handled: true };
-    }
-
-    if (cmd === '/mode') {
-        if (!args.length) {
-            renderMessage('assistant', "Available modes: " + Object.keys(MODES).join(', '), true);
-            return { handled: true };
-        }
-        const mode = args[0].toLowerCase();
-        if (!MODES[mode]) {
-            renderMessage('assistant', "Invalid mode. Try: " + Object.keys(MODES).join(', '), true);
-            return { handled: true };
-        }
-        document.getElementById('mode-select').value = mode;
-        changeMode(mode);
-        renderMessage('assistant', `Mode switched to ${mode}.`, true);
-        return { handled: true };
-    }
-
-    if (cmd === '/sarcastic') {
-        document.getElementById('mode-select').value = 'sarcastic';
-        changeMode('sarcastic');
-        renderMessage('assistant', "Sarcastic mode activated.", true);
-        return { handled: true };
-    }
-
-    renderMessage('assistant', `Unknown command: ${cmd}`, true);
-    return { handled: true };
-}
-
-/* -------------------------
-   SEND MESSAGE (full memory + smooth streaming)
+   SEND MESSAGE (old version)
 ------------------------- */
 async function sendMessage() {
     const inputField = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
-    const chatArea = document.getElementById('chat-area');
 
     const message = inputField.value.trim();
     if (!message) return;
 
-    // Clear input cleanly
     inputField.value = '';
-    inputField.dispatchEvent(new Event('input'));
-    setTimeout(() => inputField.value = '', 0);
-    inputField.blur();
-    setTimeout(() => inputField.focus(), 10);
-
     inputField.disabled = true;
     sendBtn.disabled = true;
 
     renderMessage('user', message, true);
-
-    const slash = handleSlashCommand(message);
-    if (slash && slash.handled) {
-        inputField.disabled = false;
-        sendBtn.disabled = false;
-        inputField.focus();
-        return;
-    }
-
-    const typingRow = addTypingIndicator();
 
     try {
         let responseText = "";
@@ -457,23 +242,9 @@ async function sendMessage() {
             responseText = result?.choices?.[0]?.message?.content || "PulsewaveAI returned an empty response.";
         }
 
-        // Remove typing indicator
-        if (typingRow && chatArea.contains(typingRow)) {
-            chatArea.removeChild(typingRow);
-        }
-
-        // HTML box or smooth streaming
-        if (isHtmlContent(responseText)) {
-            renderHtmlBox(responseText);
-        } else {
-            const { bubble } = renderMessage('assistant', "", false);
-            streamTextIntoBubble(bubble, responseText);
-        }
+        renderMessage('assistant', responseText, true);
 
     } catch (err) {
-        if (typingRow && chatArea.contains(typingRow)) {
-            chatArea.removeChild(typingRow);
-        }
         renderMessage('assistant', `Error: ${err.message}`, true);
     }
 
