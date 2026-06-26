@@ -124,6 +124,21 @@ function clearChat() {
     saveChatHistory([]);
 }
 
+function toggleSystemPrompt() {
+    // Old Safari-safe toggle
+    const box = document.getElementById("system-prompt-container");
+    if (!box) return;
+
+    // If hidden, show it
+    if (box.style.display === "" || box.style.display === "none") {
+        box.style.display = "block";
+    } 
+    // If visible, hide it
+    else {
+        box.style.display = "none";
+    }
+}
+
 /* -------------------------
    UI Helpers
 ------------------------- */
