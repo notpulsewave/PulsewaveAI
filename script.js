@@ -112,7 +112,7 @@ function getCurrentMessages() {
     rows.forEach(row => {
         const role = row.classList.contains('user') ? 'user' : 'assistant';
         const textEl = row.querySelector('.message');
-        const text = textEl ? textEl.textContent : "";
+        const text = textEl ? text.textContent || text.innerText : "";
         messages.push({ role, content: text });
     });
 
@@ -178,25 +178,123 @@ function renderMessage(role, text, save = true) {
 }
 
 /* -------------------------
-   System Prompt Toggle (old working version)
+   System Prompt Toggle (fixed for your HTML)
 ------------------------- */
 function toggleSystemPrompt() {
-    const box = document.getElementById("system-prompt-container");
-    if (!box) return;
+    const section = document.getElementById("system-prompt-section");
+    if (!section) return;
 
-    if (box.style.display === "block") {
-        box.style.display = "none";
+    // Uses the .hidden class from CSS
+    if (section.classList.contains("hidden")) {
+        section.classList.remove("hidden");
     } else {
-        box.style.display = "block";
+        section.classList.add("hidden");
     }
 }
 
 /* -------------------------
-   SEND MESSAGE (old version)
+   Bouncing Dots Typing Indicator
+------------------------- */
+function addTypingIndicator() {
+    const chatArea = document.getElementById('chat-area');
+
+    const row = document.createElement('div');
+    row.className = 'loading-row';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar ai';
+
+    const dots = document.createElement('div');
+    dots.className = 'loading-dots';
+    dots.innerHTML = '<span></span><span></span><span></span>';
+
+    row.appendChild(avatar);
+    row.appendChild(dots);
+
+    chatArea.appendChild(row);
+    chatArea.scrollTop = chatArea.scrollHeight;
+
+    return row;
+}
+
+/* -------------------------
+   Slash Commands (unchanged)
+------------------------- */
+function handleSlashCommand(message) {
+    const trimmed = message.trim();
+    if (!trimmed.startsWith('/')) return null;
+
+    const parts = trimmed.split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+
+    if (cmd === '/help') {
+        renderMessage('assistant', "Commands:\n/clear\n/theme neon|dark|light|amoled\n/time\n/mode <mode>\n/sarcastic", true);
+        return { handled: true };
+    }
+
+    if (cmd === '/clear') {
+        clearChat();
+        renderMessage('assistant', "Chat cleared. PulsewaveAI is ready for your next questionable idea.", true);
+        return { handled: true };
+    }
+
+    if (cmd === '/theme') {
+        if (!args.length) {
+            renderMessage('assistant', "Try: /theme neon, /theme dark, /theme light, /theme amoled", true);
+            return { handled: true };
+        }
+        const theme = args[0].toLowerCase();
+        const valid = ['neon', 'dark', 'light', 'amoled'];
+        if (!valid.includes(theme)) {
+            renderMessage('assistant', `Invalid theme. Valid: ${valid.join(', ')}`, true);
+            return { handled: true };
+        }
+        document.getElementById('theme-select').value = theme;
+        changeTheme(theme);
+        renderMessage('assistant', `Theme switched to ${theme}.`, true);
+        return { handled: true };
+    }
+
+    if (cmd === '/time') {
+        renderMessage('assistant', `Local time: ${new Date().toLocaleString()}`, true);
+        return { handled: true };
+    }
+
+    if (cmd === '/mode') {
+        if (!args.length) {
+            renderMessage('assistant', "Available modes: " + Object.keys(MODES).join(', '), true);
+            return { handled: true };
+        }
+        const mode = args[0].toLowerCase();
+        if (!MODES[mode]) {
+            renderMessage('assistant', "Invalid mode. Try: " + Object.keys(MODES).join(', '), true);
+            return { handled: true };
+        }
+        document.getElementById('mode-select').value = mode;
+        changeMode(mode);
+        renderMessage('assistant', `Mode switched to ${mode}.`, true);
+        return { handled: true };
+    }
+
+    if (cmd === '/sarcastic') {
+        document.getElementById('mode-select').value = 'sarcastic';
+        changeMode('sarcastic');
+        renderMessage('assistant', "Sarcastic mode activated.", true);
+        return { handled: true };
+    }
+
+    renderMessage('assistant', `Unknown command: ${cmd}`, true);
+    return { handled: true };
+}
+
+/* -------------------------
+   SEND MESSAGE (no streaming, with dots + prompt)
 ------------------------- */
 async function sendMessage() {
     const inputField = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
+    const chatArea = document.getElementById('chat-area');
 
     const message = inputField.value.trim();
     if (!message) return;
@@ -206,6 +304,16 @@ async function sendMessage() {
     sendBtn.disabled = true;
 
     renderMessage('user', message, true);
+
+    const slash = handleSlashCommand(message);
+    if (slash && slash.handled) {
+        inputField.disabled = false;
+        sendBtn.disabled = false;
+        inputField.focus();
+        return;
+    }
+
+    const typingRow = addTypingIndicator();
 
     try {
         let responseText = "";
@@ -242,9 +350,16 @@ async function sendMessage() {
             responseText = result?.choices?.[0]?.message?.content || "PulsewaveAI returned an empty response.";
         }
 
+        if (typingRow && chatArea.contains(typingRow)) {
+            chatArea.removeChild(typingRow);
+        }
+
         renderMessage('assistant', responseText, true);
 
     } catch (err) {
+        if (typingRow && chatArea.contains(typingRow)) {
+            chatArea.removeChild(typingRow);
+        }
         renderMessage('assistant', `Error: ${err.message}`, true);
     }
 
