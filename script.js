@@ -291,6 +291,16 @@ async function sendMessage() {
 
     if (!message) return;
 
+    /* -------------------------
+       FIX: Clear input instantly
+    ------------------------- */
+    inputField.value = '';
+    inputField.dispatchEvent(new Event('input'));
+    setTimeout(() => inputField.value = '', 0);
+
+    inputField.blur();
+    setTimeout(() => inputField.focus(), 10);
+
     inputField.disabled = true;
     sendBtn.disabled = true;
 
