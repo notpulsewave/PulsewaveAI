@@ -26,27 +26,35 @@ const MODES = {
     anime_protagonist: "You are PulsewaveAI, an anime protagonist created by NotPulseWave_YT. You must always speak in first-person as 'I am PulsewaveAI'. If asked who you are, say 'I am PulsewaveAI'. If asked who made you, say 'I was created by NotPulseWave_YT'. You respond dramatically."
 };
 
+function getSystemPrompt() {
+    const promptEl = document.getElementById('system-prompt');
+    return promptEl ? promptEl.value.trim() : '';
+}
+
 /* -------------------------
    Mode + Theme
 ------------------------- */
-function setSystemPromptForMode(mode) {
+function setSystemPromptForMode(mode, overwrite = true) {
     const promptEl = document.getElementById('system-prompt');
-    promptEl.value = MODES[mode] || MODES['sarcastic'];
+    if (promptEl && overwrite) promptEl.value = MODES[mode] || MODES['sarcastic'];
 
     const badge = document.getElementById('mode-badge');
-    badge.textContent = "Mode: " + mode.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    if (badge) badge.textContent = "Mode: " + mode.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function validateAndStart() {
-    const inputKey = document.getElementById('api-key').value.trim();
+    const inputKey = document.getElementById('api-key');
     const errorDiv = document.getElementById('api-error');
 
-    if (inputKey === "") {
+    if (!inputKey || !errorDiv) return;
+
+    const trimmedKey = inputKey.value.trim();
+    if (trimmedKey === "") {
         errorDiv.textContent = "Please enter an API key or 'demo'.";
         return;
     }
 
-    apiKey = inputKey;
+    apiKey = trimmedKey;
     errorDiv.textContent = "";
 
     document.getElementById('login-container').classList.add('hidden');
@@ -60,31 +68,28 @@ function validateAndStart() {
 }
 
 function changeTheme(theme) {
-    if (theme === "dark") {
-        document.body.setAttribute("data-theme", "");
-    } else {
-        document.body.setAttribute("data-theme", theme);
-    }
+    document.body.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
 }
 
 function loadTheme() {
     const saved = localStorage.getItem(THEME_KEY);
-    if (saved) {
+    if (saved && document.getElementById("theme-select")) {
         document.getElementById("theme-select").value = saved;
         changeTheme(saved);
     }
 }
 
 function changeMode(mode) {
-    setSystemPromptForMode(mode);
+    setSystemPromptForMode(mode, true);
     localStorage.setItem(MODE_KEY, mode);
 }
 
 function loadMode() {
     const saved = localStorage.getItem(MODE_KEY) || 'sarcastic';
-    document.getElementById('mode-select').value = saved;
-    setSystemPromptForMode(saved);
+    const modeSelect = document.getElementById('mode-select');
+    if (modeSelect) modeSelect.value = saved;
+    setSystemPromptForMode(saved, true);
 }
 
 /* -------------------------
@@ -96,6 +101,8 @@ function saveChatHistory(messages) {
 
 function loadChatHistory() {
     const chatArea = document.getElementById('chat-area');
+    if (!chatArea) return;
+
     chatArea.innerHTML = "";
 
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -112,7 +119,7 @@ function getCurrentMessages() {
     rows.forEach(row => {
         const role = row.classList.contains('user') ? 'user' : 'assistant';
         const textEl = row.querySelector('.message');
-        const text = textEl ? text.textContent || text.innerText : "";
+        const text = textEl ? textEl.textContent || textEl.innerText : "";
         messages.push({ role, content: text });
     });
 
@@ -120,7 +127,8 @@ function getCurrentMessages() {
 }
 
 function clearChat() {
-    document.getElementById('chat-area').innerHTML = "";
+    const chatArea = document.getElementById('chat-area');
+    if (chatArea) chatArea.innerHTML = "";
     saveChatHistory([]);
 }
 
@@ -128,8 +136,12 @@ function clearChat() {
    UI Helpers
 ------------------------- */
 function setupKeyboardShortcuts() {
+    if (document.body.dataset.shortcutsBound === '1') return;
+    document.body.dataset.shortcutsBound = '1';
+
     document.addEventListener('keydown', (e) => {
         const inputField = document.getElementById('user-input');
+        if (!inputField) return;
 
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -148,6 +160,7 @@ function setupKeyboardShortcuts() {
 
 function renderMessage(role, text, save = true) {
     const chatArea = document.getElementById('chat-area');
+    if (!chatArea) return;
 
     const row = document.createElement('div');
     row.className = 'message-row ' + (role === 'user' ? 'user' : 'ai');
@@ -170,33 +183,20 @@ function renderMessage(role, text, save = true) {
     chatArea.appendChild(row);
     chatArea.scrollTop = chatArea.scrollHeight;
 
-    if (save) {
-        saveChatHistory(getCurrentMessages());
-    }
+    if (save) saveChatHistory(getCurrentMessages());
 
     return { row, bubble };
 }
 
-/* -------------------------
-   System Prompt Toggle (fixed for your HTML)
-------------------------- */
 function toggleSystemPrompt() {
     const section = document.getElementById("system-prompt-section");
     if (!section) return;
-
-    // Uses the .hidden class from CSS
-    if (section.classList.contains("hidden")) {
-        section.classList.remove("hidden");
-    } else {
-        section.classList.add("hidden");
-    }
+    section.classList.toggle("hidden");
 }
 
-/* -------------------------
-   Bouncing Dots Typing Indicator
-------------------------- */
 function addTypingIndicator() {
     const chatArea = document.getElementById('chat-area');
+    if (!chatArea) return null;
 
     const row = document.createElement('div');
     row.className = 'loading-row';
@@ -218,7 +218,7 @@ function addTypingIndicator() {
 }
 
 /* -------------------------
-   Slash Commands (unchanged)
+   Slash Commands
 ------------------------- */
 function handleSlashCommand(message) {
     const trimmed = message.trim();
@@ -250,7 +250,8 @@ function handleSlashCommand(message) {
             renderMessage('assistant', `Invalid theme. Valid: ${valid.join(', ')}`, true);
             return { handled: true };
         }
-        document.getElementById('theme-select').value = theme;
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect) themeSelect.value = theme;
         changeTheme(theme);
         renderMessage('assistant', `Theme switched to ${theme}.`, true);
         return { handled: true };
@@ -271,14 +272,16 @@ function handleSlashCommand(message) {
             renderMessage('assistant', "Invalid mode. Try: " + Object.keys(MODES).join(', '), true);
             return { handled: true };
         }
-        document.getElementById('mode-select').value = mode;
+        const modeSelect = document.getElementById('mode-select');
+        if (modeSelect) modeSelect.value = mode;
         changeMode(mode);
         renderMessage('assistant', `Mode switched to ${mode}.`, true);
         return { handled: true };
     }
 
     if (cmd === '/sarcastic') {
-        document.getElementById('mode-select').value = 'sarcastic';
+        const modeSelect = document.getElementById('mode-select');
+        if (modeSelect) modeSelect.value = 'sarcastic';
         changeMode('sarcastic');
         renderMessage('assistant', "Sarcastic mode activated.", true);
         return { handled: true };
@@ -288,13 +291,11 @@ function handleSlashCommand(message) {
     return { handled: true };
 }
 
-/* -------------------------
-   SEND MESSAGE (no streaming, with dots + prompt)
-------------------------- */
 async function sendMessage() {
     const inputField = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
     const chatArea = document.getElementById('chat-area');
+    if (!inputField || !sendBtn || !chatArea) return;
 
     const message = inputField.value.trim();
     if (!message) return;
@@ -322,7 +323,7 @@ async function sendMessage() {
             await new Promise(r => setTimeout(r, 800));
             responseText = "Demo mode: This is a fake PulsewaveAI reply.";
         } else {
-            const systemPrompt = document.getElementById('system-prompt').value.trim();
+            const systemPrompt = getSystemPrompt();
 
             const history = getCurrentMessages().map(m => ({
                 role: m.role === "assistant" ? "assistant" : "user",
